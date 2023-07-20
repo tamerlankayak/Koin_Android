@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,8 +48,42 @@ class ListFragment : Fragment(), RecyclerViewAdapter.Listener {
 
         viewModel = ViewModelProvider(this).get(CryptoViewModel::class.java)
         viewModel.getDataFromAPI()
+        observeLiveData()
     }
 
+
+    private fun observeLiveData() {
+        viewModel.cryptoList.observe(viewLifecycleOwner, Observer { cryptos ->
+            cryptos?.let {
+                binding.recyclerView.visibility = View.VISIBLE
+                cryptoAdapter = RecyclerViewAdapter(ArrayList(cryptos), this@ListFragment)
+                binding.recyclerView.adapter = cryptoAdapter
+            }
+        })
+
+        viewModel.cryptoError.observe(viewLifecycleOwner, Observer { error ->
+            error?.let {
+                if (it) {
+                    binding.cryptoErrorText.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
+                } else {
+                    binding.cryptoErrorText.visibility = View.GONE
+                }
+            }
+        })
+
+        viewModel.cryptoLoading.observe(viewLifecycleOwner, Observer { loading ->
+            loading?.let {
+                if (it) {
+                    binding.cryptoProgressBar.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.cryptoErrorText.visibility = View.GONE
+                } else {
+                    binding.cryptoProgressBar.visibility = View.GONE
+                }
+            }
+        })
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
