@@ -18,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 
-
+//list of view
 class ListFragment : Fragment(), RecyclerViewAdapter.Listener, AndroidScopeComponent {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
